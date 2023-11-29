@@ -123,7 +123,8 @@ void file_events::import_rawdata_geometry(geom_store& geom)
 	std::cout << "Selected File: " << file_path << std::endl;
 
 	// Open the input file
-	std::ifstream input_file(file_path, std::ifstream::in);
+	// std::ifstream input_file(file_path, std::ifstream::in);
+	std::ifstream input_file(file_path, std::ios::binary);
 
 	if (!input_file.is_open()) {
 		std::cerr << "Failed to open input file: " << file_path << std::endl;

@@ -48,22 +48,22 @@ void geom_store::read_rawdata(std::ifstream& input_file)
 
 	std::cout << "Reading of input started" << std::endl;
 
-	// Read the Raw Data
-	// Read the entire file into a string
-	std::string file_contents((std::istreambuf_iterator<char>(input_file)),
-		std::istreambuf_iterator<char>());
+	//// Read the Raw Data
+	//// Read the entire file into a string
+	//std::string file_contents((std::istreambuf_iterator<char>(input_file)),
+	//	std::istreambuf_iterator<char>());
 
-	// Split the string into lines
-	std::istringstream iss(file_contents);
-	std::string line;
-	std::vector<std::string> lines;
-	while (std::getline(iss, line))
-	{
-		lines.push_back(line);
-	}
+	//// Split the string into lines
+	//std::istringstream iss(file_contents);
+	//std::string line;
+	//std::vector<std::string> lines;
+	//while (std::getline(iss, line))
+	//{
+	//	lines.push_back(line);
+	//}
 
-	stopwatch_elapsed_str << stopwatch.elapsed();
-	std::cout << "Lines loaded at " << stopwatch_elapsed_str.str() << " secs" << std::endl;
+	//stopwatch_elapsed_str << stopwatch.elapsed();
+	//std::cout << "Lines loaded at " << stopwatch_elapsed_str.str() << " secs" << std::endl;
 
 	int j = 0;
 
@@ -82,9 +82,11 @@ void geom_store::read_rawdata(std::ifstream& input_file)
 	// Initialize the result store
 	this->model_contourresults.init(&geom_param);
 
-	//Node Point list
+	//Node Point list (To find the geometric center)
 	std::vector<glm::vec2> node_pts_list;
 
+
+	/*
 	// Process the lines
 	while (j < lines.size())
 	{
@@ -266,11 +268,129 @@ void geom_store::read_rawdata(std::ifstream& input_file)
 		this->model_edgeelements.add_elementline(edge_count, quad_elm.nd4, quad_elm.nd1);
 		edge_count = this->model_edgeelements.elementline_count;
 	}
+	*/
+	
+
+	////____________________________________________________________________________________
+	//// Print the data
+	//	// Create a file to keep track of matrices
+	//std::ofstream output_file;
+	//output_file.open("circle_domain_256_data..bin", std::ios::binary);
+
+	//// Iterate through the Node map and write node_id and node_pt to the file
+	//for (const auto& nd_m : this->model_nodes.nodeMap) 
+	//{
+	//	char type = 'n';  // Identifier for node
+	//	output_file.write(&type, sizeof(char));
+	//	const node_store& node = nd_m.second;
+
+	//	output_file.write(reinterpret_cast<const char*>(&node.node_id), sizeof(node.node_id)); // node id
+	//	output_file.write(reinterpret_cast<const char*>(&node.node_pt), sizeof(node.node_pt)); // node pt
+	//}
+
+
+	//// Iterate through the Quad map and write quad_id and quad_pt ids to the file
+	//for (const auto& quad_map : model_quadelements.elementquadMap)
+	//{
+	//	char type = 'q';  // Identifier for element_quad
+	//	output_file.write(&type, sizeof(char));
+	//	const elementquad_store& elmnt = quad_map.second;
+
+	//	output_file.write(reinterpret_cast<const char*>(&elmnt.quad_id), sizeof(elmnt.quad_id)); // quad id
+	//	output_file.write(reinterpret_cast<const char*>(&elmnt.nd1->node_id), sizeof(elmnt.nd1->node_id)); // quad pt id 1
+	//	output_file.write(reinterpret_cast<const char*>(&elmnt.nd2->node_id), sizeof(elmnt.nd2->node_id)); // quad pt id 2
+	//	output_file.write(reinterpret_cast<const char*>(&elmnt.nd3->node_id), sizeof(elmnt.nd3->node_id)); // quad pt id 3
+	//	output_file.write(reinterpret_cast<const char*>(&elmnt.nd4->node_id), sizeof(elmnt.nd4->node_id)); // quad pt id 4
+
+	//}
+
+	//// Iterate through the Edge map and write edge_id and edge_pt ids to the file
+	//for (const auto& edge_map : model_edgeelements.elementlineMap)
+	//{
+	//	char type = 'e';  // Identifier for element_line
+	//	output_file.write(&type, sizeof(char));
+	//	const elementline_store& edge = edge_map.second;
+
+	//	output_file.write(reinterpret_cast<const char*>(&edge.line_id), sizeof(edge.line_id)); // line id
+	//	output_file.write(reinterpret_cast<const char*>(&edge.startNode->node_id), sizeof(edge.startNode->node_id)); // line start id
+	//	output_file.write(reinterpret_cast<const char*>(&edge.endNode->node_id), sizeof(edge.endNode->node_id)); // line end id
+	//}
+
+	//output_file.close();
+	////____________________________________________________________________________________
+
+
+
+
+	//____________________________________________________________________________________
+	 // Open the binary file for reading
+	// std::ifstream binary_input_file("circle_domain_64_data.bin", std::ios::binary);
+
+	if (input_file.is_open())
+	{
+		// Read node data
+		while (!input_file.eof())
+		{
+			char type;
+			input_file.read(&type, sizeof(char));
+			switch (type)
+			{
+				case 'n':
+				{
+					int nd_id;
+					glm::vec2 nd_pt;
+					input_file.read(reinterpret_cast<char*>(&nd_id), sizeof(nd_id));
+					input_file.read(reinterpret_cast<char*>(&nd_pt), sizeof(nd_pt));
+
+
+					node_pts_list.push_back(nd_pt);
+
+					// Add the nodes
+					this->model_nodes.add_node(nd_id, nd_pt);
+					break;
+				}
+				case 'q':
+				{
+					int quad_id,quad_ndid1,quad_ndid2,quad_ndid3,quad_ndid4;
+					input_file.read(reinterpret_cast<char*>(&quad_id), sizeof(quad_id));
+					input_file.read(reinterpret_cast<char*>(&quad_ndid1), sizeof(quad_ndid1));
+					input_file.read(reinterpret_cast<char*>(&quad_ndid2), sizeof(quad_ndid2));
+					input_file.read(reinterpret_cast<char*>(&quad_ndid3), sizeof(quad_ndid3));
+					input_file.read(reinterpret_cast<char*>(&quad_ndid4), sizeof(quad_ndid4));
+
+
+					// Add the Quadrilateral Elements
+					this->model_quadelements.add_elementquadrilateral(quad_id, &model_nodes.nodeMap[quad_ndid1],
+						&model_nodes.nodeMap[quad_ndid2],
+						&model_nodes.nodeMap[quad_ndid3],
+						&model_nodes.nodeMap[quad_ndid4]);
+					break;
+				}
+				case 'e':
+				{
+					int edge_id, edge_startid, edge_endid;
+					input_file.read(reinterpret_cast<char*>(&edge_id), sizeof(edge_id));
+					input_file.read(reinterpret_cast<char*>(&edge_startid), sizeof(edge_startid));
+					input_file.read(reinterpret_cast<char*>(&edge_endid), sizeof(edge_endid));
+
+					// Add to the edges
+					this->model_edgeelements.add_elementline(edge_id, &model_nodes.nodeMap[edge_startid],
+						&model_nodes.nodeMap[edge_endid]);
+
+					break;
+				}
+			}
+		}
+
+		// Close the file
+		input_file.close();
+	}
+	//____________________________________________________________________________________
 
 
 	stopwatch_elapsed_str.str("");
 	stopwatch_elapsed_str << stopwatch.elapsed();
-	std::cout << "Edges created at " << stopwatch_elapsed_str.str() << " secs" << std::endl;
+	std::cout << "Input reading completed at " << stopwatch_elapsed_str.str() << " secs" << std::endl;
 
 	// Create the default material
 	material_data inpt_material;
