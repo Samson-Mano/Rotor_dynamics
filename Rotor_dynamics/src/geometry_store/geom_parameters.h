@@ -16,15 +16,6 @@ struct geom_color_theme
 	glm::vec3 triangle_color = glm::vec3(0);
 };
 
-struct material_data
-{
-	unsigned int material_id = 0;
-	std::string material_name = "";
-	double thermal_conductivity_kx = 0.0;
-	double thermal_conductivity_ky = 0.0;
-	double element_thickness = 0.0;
-};
-
 class Stopwatch
 {
 public:

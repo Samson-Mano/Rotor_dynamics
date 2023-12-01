@@ -8,11 +8,7 @@
 
 // Window includes
 #include "../tool_window/analysis_window.h"
-#include "../tool_window/node_window.h"
-#include "../tool_window/edge_window.h"
-#include "../tool_window/element_window.h"
 #include "../tool_window/options_window.h"
-#include "../tool_window/element_prop_window.h"
 
 // Solver
 #include "../fe_solver/analysis_solver.h"
@@ -22,14 +18,13 @@
 #include "fe_objects/elementline_list_store.h"
 #include "fe_objects/elementtri_list_store.h"
 #include "fe_objects/elementquad_list_store.h"
-#include "fe_objects/constraints_list_store.h"
 
 // Geometry Objects
 #include "geometry_objects/dynamic_selrectangle_store.h"
 
 // FE Result Objects Heat analysis
-#include "analysis_result_objects/heatcontour_tri_list_store.h";
-
+#include "analysis_result_objects/quadcontour_list_store.h";
+#include "analysis_result_objects/nodevector_list_store.h"
 
 class geom_store
 {
@@ -43,13 +38,11 @@ public:
 	geom_store();
 	~geom_store();
 
-	void init(analysis_window* sol_window, options_window* op_window,
-		node_window* nd_window, edge_window* edg_window , element_window* elm_window, element_prop_window* elm_prop_window);
+	void init(analysis_window* sol_window, options_window* op_window);
 	void fini();
 
 	// Reading and writing the geometry file
-	void read_rawdata(std::ifstream& input_file);
-	void write_rawdata(std::ofstream& output_file);
+	void read_rawdata(std::ifstream& input_file, std::ifstream& node_vector_file);
 
 	// Functions to control the drawing area
 	void update_WindowDimension(const int& window_width, const int& window_height);
@@ -70,27 +63,21 @@ private:
 
 	// Geometry objects
 	nodes_list_store model_nodes;
+	std::vector<glm::vec2> model_vector_nodes;
 	elementline_list_store model_edgeelements;
 	elementtri_list_store model_trielements;
 	elementquad_list_store model_quadelements;
 
-	// Constraints
-	constraints_list_store model_constraints;
-
-	// Heat analysis result 
-	heatcontour_tri_list_store model_contourresults;
-
+	// Acceleration analysis result 
+	quadcontour_list_store model_contourresults;
+	nodevector_list_store model_vectorresults;
 
 	// Analysis
-	bool is_heat_analysis_complete = false;
+	bool is_accl_analysis_complete = false;
 
 	// Window pointers
 	analysis_window* sol_window = nullptr;
 	options_window* op_window = nullptr;
-	node_window* nd_window = nullptr;
-	edge_window* edg_window = nullptr;
-	element_window* elm_window = nullptr;
-	element_prop_window* elm_prop_window = nullptr;
 
 	void paint_model(); // Paint the model
 	void paint_model_results(); // Paint the results

@@ -66,18 +66,6 @@
     <ClCompile Include="src\tool_window\analysis_window.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\tool_window\edge_window.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\tool_window\element_prop_window.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\tool_window\element_window.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\tool_window\node_window.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\tool_window\options_window.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -132,9 +120,6 @@
     <ClCompile Include="src\geometry_store\geometry_buffers\VertexBufferLayout.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\geometry_store\fe_objects\constraints_list_store.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\geometry_store\fe_objects\elementline_list_store.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -144,10 +129,19 @@
     <ClCompile Include="src\geometry_store\fe_objects\nodes_list_store.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\geometry_store\analysis_result_objects\heatcontour_tri_list_store.cpp">
+    <ClCompile Include="src\geometry_store\fe_objects\elementquad_list_store.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\geometry_store\fe_objects\elementquad_list_store.cpp">
+    <ClCompile Include="src\geometry_store\analysis_result_objects\nodevector_list_store.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\geometry_store\geometry_objects\dynamic_vector_list_store.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\geometry_store\analysis_result_objects\quadcontour_list_store.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\geometry_store\geometry_objects\dynamic_tricontour_list_store.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -212,18 +206,6 @@
     <ClInclude Include="src\tool_window\analysis_window.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\tool_window\edge_window.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\tool_window\element_prop_window.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\tool_window\element_window.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\tool_window\node_window.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\tool_window\options_window.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -278,9 +260,6 @@
     <ClInclude Include="src\geometry_store\geometry_buffers\VertexBufferLayout.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\geometry_store\fe_objects\constraints_list_store.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\geometry_store\fe_objects\elementline_list_store.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -290,10 +269,19 @@
     <ClInclude Include="src\geometry_store\fe_objects\nodes_list_store.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\geometry_store\analysis_result_objects\heatcontour_tri_list_store.h">
+    <ClInclude Include="src\geometry_store\fe_objects\elementquad_list_store.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\geometry_store\fe_objects\elementquad_list_store.h">
+    <ClInclude Include="src\geometry_store\analysis_result_objects\nodevector_list_store.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\geometry_store\geometry_objects\dynamic_vector_list_store.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\geometry_store\analysis_result_objects\quadcontour_list_store.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\geometry_store\geometry_objects\dynamic_tricontour_list_store.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -313,6 +301,20 @@
     <None Include="resources\shaders\selrect_vert_shader.vert" />
     <None Include="resources\shaders\text_frag_shader.frag" />
     <None Include="resources\shaders\text_vert_shader.vert" />
+    <None Include="circle_domain_256_data.bin">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="circle_domain_64_data.bin">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="circle_domain_64_onlynode_data.bin">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="circle_domain_128_data.bin">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="resources\shaders\dynvectorpoint_frag_shader.frag" />
+    <None Include="resources\shaders\dynvectorpoint_vert_shader.vert" />
   </ItemGroup>
   <ItemGroup>
     <Font Include="resources\fonts\CanadaDBNormal.ttf" />

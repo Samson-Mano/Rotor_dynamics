@@ -67,26 +67,20 @@ void app_window::init()
 	// Window initialize success
 	is_glwindow_success = true;
 
+
 	// Intialize tool windows
-	nd_window.init(); // Node window
-	edg_window.init(); // Edge window
-	elm_window.init(); // Element window
 	op_window.init(); // Option window
 	sol_window.init(); // Analysis solver window
-	elm_prop_window.init(); // Element properties window
 
 	geom.update_WindowDimension(window_width, window_height);
 	// Initialize the geometry (initialize only after model window is initialized)
-	geom.init(&sol_window, &op_window, &nd_window, &edg_window, &elm_window, &elm_prop_window);
+	geom.init(&sol_window, &op_window);
 
 	// Set the mouse button callback function with the user pointer pointing to the mouseHandler object
 	glfwSetWindowUserPointer(window, &mouse_Handler);
 
 	// Passing the address of geom and window dimensions to mouse handler
-	mouse_Handler.init(&geom, &sol_window, &op_window, &nd_window, &edg_window, &elm_window, &elm_prop_window);
-
-	// Pass the address of options window, material window, solver window
-	// geom.add_window_ptr(&op_window, &mat_window, &fe_window);
+	mouse_Handler.init(&geom, &sol_window, &op_window);
 
 	glfwSetMouseButtonCallback(window, mouse_event_handler::mouseButtonCallback);
 
@@ -149,6 +143,19 @@ void app_window::app_render()
 	glPointSize(4.0f);
 	glLineWidth(1.2f);
 
+
+	//_________________________________________________________
+	//------- Read the circle domain --------------------------
+	//circle_domain_64_data.bin
+	//circle_domain_64_onlynode_data.bin
+	//circle_domain_128_data.bin
+	//circle_domain_256_data.bin
+	std::ifstream input_file("circle_domain_64_data.bin", std::ios::binary);
+	std::ifstream node_vector_file("circle_domain_64_onlynode_data.bin", std::ios::binary);
+
+	geom.read_rawdata(input_file, node_vector_file);
+
+	//---------------------------------------------------------
 	// Main rendering loop
 	while (!glfwWindowShouldClose(window))
 	{
@@ -202,18 +209,6 @@ void app_window::menu_events()
 		// File menu item
 		if (ImGui::BeginMenu("File"))
 		{
-			if (ImGui::MenuItem("Import mesh"))
-			{
-				// Import mesh menu
-				file_menu.filemenu_event(import_raw_data, geom);
-				isWindowSizeChanging = true;
-			}
-			if (ImGui::MenuItem("Export mesh"))
-			{
-				// Export mesh menu
-				file_menu.filemenu_event(export_raw_data, geom);
-				isWindowSizeChanging = true;
-			}
 			if (ImGui::MenuItem("Options"))
 			{
 				// Options menu
@@ -226,36 +221,10 @@ void app_window::menu_events()
 			}
 			ImGui::EndMenu();
 		}
-		// Pre-Processing menu item
-		if (ImGui::BeginMenu("Pre-Processing"))
-		{
-			if (ImGui::MenuItem("Nodal Constraints"))
-			{
-				// Nodal Constraints
-				nd_window.is_show_window = true;
-			}
-			if (ImGui::MenuItem("Edge Constraints"))
-			{
-				// Edge Constraints
-				edg_window.is_show_window = true;
-			}
-			if (ImGui::MenuItem("Element Constraints"))
-			{
-				// Element Constraints
-				elm_window.is_show_window = true;
-			}
-			if (ImGui::MenuItem("Element Properties"))
-			{
-				// Element Properties
-				elm_prop_window.is_show_window = true;
-			}
-
-			ImGui::EndMenu();
-		}
 		// Solve
 		if (ImGui::BeginMenu("Solve"))
 		{
-			if (ImGui::MenuItem("Finite Element Solve"))
+			if (ImGui::MenuItem("Acceleration Vector Solve"))
 			{
 				// Finite Element Solve
 				sol_window.execute_open = true;
@@ -269,10 +238,6 @@ void app_window::menu_events()
 	}
 
 	// Execute window render operation
-	nd_window.render_window(); // Node window
-	edg_window.render_window(); // Edge window
-	elm_window.render_window(); // Element window
-	elm_prop_window.render_window(); // Element Properties window
 	op_window.render_window(); // Option window
 	sol_window.render_window(); // Solver window
 

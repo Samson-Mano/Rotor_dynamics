@@ -16,12 +16,8 @@
 //---- File event handler
 #include "events_handler/file_events.h"
 //____ Tool Window
-#include "tool_window/node_window.h"
-#include "tool_window/edge_window.h"
-#include "tool_window/element_window.h"
 #include "tool_window/analysis_window.h"
 #include "tool_window/options_window.h"
-#include "tool_window/element_prop_window.h"
 
 class app_window
 {
@@ -43,12 +39,8 @@ public:
 	geom_store geom;
 
 	// Tool window variable
-	node_window nd_window;
-	edge_window edg_window;
-	element_window elm_window;
 	options_window op_window;
 	analysis_window sol_window;
-	element_prop_window elm_prop_window;
 
 	app_window();
 	~app_window();

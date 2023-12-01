@@ -1,0 +1,279 @@
+// Create stopwatch
+	Stopwatch_events stopwatch;
+	stopwatch.start();
+	std::stringstream stopwatch_elapsed_str;
+	stopwatch_elapsed_str << std::fixed << std::setprecision(6);
+
+	std::cout << "Reading of input started" << std::endl;
+
+	//// Read the Raw Data
+	//// Read the entire file into a string
+	//std::string file_contents((std::istreambuf_iterator<char>(input_file)),
+	//	std::istreambuf_iterator<char>());
+
+	//// Split the string into lines
+	//std::istringstream iss(file_contents);
+	//std::string line;
+	//std::vector<std::string> lines;
+	//while (std::getline(iss, line))
+	//{
+	//	lines.push_back(line);
+	//}
+
+	//stopwatch_elapsed_str << stopwatch.elapsed();
+	//std::cout << "Lines loaded at " << stopwatch_elapsed_str.str() << " secs" << std::endl;
+
+	int j = 0;
+
+	// Reinitialize the model geometry
+	is_geometry_set = false;
+	is_heat_analysis_complete = false;
+
+	// Initialize the model items
+	this->model_nodes.init(&geom_param);
+	this->model_edgeelements.init(&geom_param);
+	this->model_trielements.init(&geom_param);
+	this->model_quadelements.init(&geom_param);
+
+	this->model_constraints.init(&geom_param);
+
+	// Initialize the result store
+	this->model_contourresults.init(&geom_param);
+
+	//Node Point list (To find the geometric center)
+	std::vector<glm::vec2> node_pts_list;
+
+
+	/*
+	// Process the lines
+	while (j < lines.size())
+	{
+		std::istringstream iss(lines[j]);
+
+		std::string inpt_type;
+		char comma;
+		iss >> inpt_type;
+
+		if (inpt_type == "*NODE")
+		{
+			// Nodes
+			while (j < lines.size())
+			{
+				std::istringstream nodeIss(lines[j + 1]);
+
+				// Vector to store the split values
+				std::vector<std::string> splitValues;
+
+				// Split the string by comma
+				std::string token;
+				while (std::getline(nodeIss, token, ','))
+				{
+					splitValues.push_back(token);
+				}
+
+				if (static_cast<int>(splitValues.size()) != 4)
+				{
+					break;
+				}
+
+				int node_id = std::stoi(splitValues[0]); // node ID
+				double x = std::stod(splitValues[1]); // Node coordinate x
+				double y = std::stod(splitValues[2]); // Node coordinate y
+
+				glm::vec2 node_pt = glm::vec2(x, y);
+				node_pts_list.push_back(node_pt);
+
+				// Add the nodes
+				this->model_nodes.add_node(node_id, node_pt);
+				j++;
+			}
+
+			stopwatch_elapsed_str.str("");
+			stopwatch_elapsed_str << stopwatch.elapsed();
+			std::cout << "Nodes read completed at " << stopwatch_elapsed_str.str() << " secs" << std::endl;
+		}
+
+		if (inpt_type == "*ELEMENT,TYPE=S3")
+		{
+			// Triangle Element
+			while (j < lines.size())
+			{
+				std::istringstream elementIss(lines[j + 1]);
+
+				// Vector to store the split values
+				std::vector<std::string> splitValues;
+
+				// Split the string by comma
+				std::string token;
+				while (std::getline(elementIss, token, ','))
+				{
+					splitValues.push_back(token);
+				}
+
+				if (static_cast<int>(splitValues.size()) != 4)
+				{
+					break;
+				}
+
+				int tri_id = std::stoi(splitValues[0]); // triangle ID
+				int nd1 = std::stoi(splitValues[1]); // Node id 1
+				int nd2 = std::stoi(splitValues[2]); // Node id 2
+				int nd3 = std::stoi(splitValues[3]); // Node id 3
+
+				// Add the Triangle Elements
+				this->model_trielements.add_elementtriangle(tri_id, &model_nodes.nodeMap[nd1], &model_nodes.nodeMap[nd2],
+					&model_nodes.nodeMap[nd3]);
+				j++;
+			}
+
+
+			stopwatch_elapsed_str.str("");
+			stopwatch_elapsed_str << stopwatch.elapsed();
+			std::cout << "Triangle Elements read completed at " << stopwatch_elapsed_str.str() << " secs" << std::endl;
+
+		}
+
+
+
+		if (inpt_type == "*ELEMENT,TYPE=S4")
+		{
+			// Quadrialteral Element
+			while (j < lines.size())
+			{
+				std::istringstream elementIss(lines[j + 1]);
+
+				// Vector to store the split values
+				std::vector<std::string> splitValues;
+
+				// Split the string by comma
+				std::string token;
+				while (std::getline(elementIss, token, ','))
+				{
+					splitValues.push_back(token);
+				}
+
+				if (static_cast<int>(splitValues.size()) != 5)
+				{
+					break;
+				}
+
+				int quad_id = std::stoi(splitValues[0]); // quadrilateral ID
+				int nd1 = std::stoi(splitValues[1]); // Node id 1
+				int nd2 = std::stoi(splitValues[2]); // Node id 2
+				int nd3 = std::stoi(splitValues[3]); // Node id 3
+				int nd4 = std::stoi(splitValues[4]); // Node id 4
+
+				// Add the Quadrilateral Elements
+				this->model_quadelements.add_elementquadrilateral(quad_id, &model_nodes.nodeMap[nd1], &model_nodes.nodeMap[nd2],
+					&model_nodes.nodeMap[nd3], &model_nodes.nodeMap[nd4]);
+				j++;
+			}
+
+
+			stopwatch_elapsed_str.str("");
+			stopwatch_elapsed_str << stopwatch.elapsed();
+			std::cout << "Quadrilateral Elements read completed at " << stopwatch_elapsed_str.str() << " secs" << std::endl;
+		}
+
+		// Iterate the line
+		j++;
+	}
+
+
+	// Input read failed??
+	if (model_nodes.node_count == 0 || (model_trielements.elementtri_count + model_quadelements.elementquad_count) == 0)
+	{
+		std::cerr << "Input error !!" << std::endl;
+		return;
+	}
+
+	// Add the Tri Element Edges
+	int edge_count = 0;
+	for (const auto& tri_map : model_trielements.elementtriMap)
+	{
+		elementtri_store tri_elm = tri_map.second;
+		// Add the edges (!!! Note Only distinct edges are added, no copy)
+		// Edge 1 ( 1 -> 2)
+		this->model_edgeelements.add_elementline(edge_count, tri_elm.nd1, tri_elm.nd2);
+		edge_count = this->model_edgeelements.elementline_count;
+
+		// Edge 2 (2 -> 3)
+		this->model_edgeelements.add_elementline(edge_count, tri_elm.nd2, tri_elm.nd3);
+		edge_count = this->model_edgeelements.elementline_count;
+
+		// Edge 3 (3 -> 1)
+		this->model_edgeelements.add_elementline(edge_count, tri_elm.nd3, tri_elm.nd1);
+		edge_count = this->model_edgeelements.elementline_count;
+	}
+
+	for (const auto& quad_map : model_quadelements.elementquadMap)
+	{
+		elementquad_store quad_elm = quad_map.second;
+		// Add the edges (!!! Note Only distinct edges are added, no copy)
+		// Edge 1 ( 1 -> 2)
+		this->model_edgeelements.add_elementline(edge_count, quad_elm.nd1, quad_elm.nd2);
+		edge_count = this->model_edgeelements.elementline_count;
+
+		// Edge 2 (2 -> 3)
+		this->model_edgeelements.add_elementline(edge_count, quad_elm.nd2, quad_elm.nd3);
+		edge_count = this->model_edgeelements.elementline_count;
+
+		// Edge 3 (3 -> 4)
+		this->model_edgeelements.add_elementline(edge_count, quad_elm.nd3, quad_elm.nd4);
+		edge_count = this->model_edgeelements.elementline_count;
+
+		// Edge 4 (4 -> 1)
+		this->model_edgeelements.add_elementline(edge_count, quad_elm.nd4, quad_elm.nd1);
+		edge_count = this->model_edgeelements.elementline_count;
+	}
+	*/
+	
+
+	////____________________________________________________________________________________
+	//// Print the data
+	//	// Create a file to keep track of matrices
+	//std::ofstream output_file;
+	//output_file.open("circle_domain_256_data..bin", std::ios::binary);
+
+	//// Iterate through the Node map and write node_id and node_pt to the file
+	//for (const auto& nd_m : this->model_nodes.nodeMap) 
+	//{
+	//	char type = 'n';  // Identifier for node
+	//	output_file.write(&type, sizeof(char));
+	//	const node_store& node = nd_m.second;
+
+	//	output_file.write(reinterpret_cast<const char*>(&node.node_id), sizeof(node.node_id)); // node id
+	//	output_file.write(reinterpret_cast<const char*>(&node.node_pt), sizeof(node.node_pt)); // node pt
+	//}
+
+
+	//// Iterate through the Quad map and write quad_id and quad_pt ids to the file
+	//for (const auto& quad_map : model_quadelements.elementquadMap)
+	//{
+	//	char type = 'q';  // Identifier for element_quad
+	//	output_file.write(&type, sizeof(char));
+	//	const elementquad_store& elmnt = quad_map.second;
+
+	//	output_file.write(reinterpret_cast<const char*>(&elmnt.quad_id), sizeof(elmnt.quad_id)); // quad id
+	//	output_file.write(reinterpret_cast<const char*>(&elmnt.nd1->node_id), sizeof(elmnt.nd1->node_id)); // quad pt id 1
+	//	output_file.write(reinterpret_cast<const char*>(&elmnt.nd2->node_id), sizeof(elmnt.nd2->node_id)); // quad pt id 2
+	//	output_file.write(reinterpret_cast<const char*>(&elmnt.nd3->node_id), sizeof(elmnt.nd3->node_id)); // quad pt id 3
+	//	output_file.write(reinterpret_cast<const char*>(&elmnt.nd4->node_id), sizeof(elmnt.nd4->node_id)); // quad pt id 4
+
+	//}
+
+	//// Iterate through the Edge map and write edge_id and edge_pt ids to the file
+	//for (const auto& edge_map : model_edgeelements.elementlineMap)
+	//{
+	//	char type = 'e';  // Identifier for element_line
+	//	output_file.write(&type, sizeof(char));
+	//	const elementline_store& edge = edge_map.second;
+
+	//	output_file.write(reinterpret_cast<const char*>(&edge.line_id), sizeof(edge.line_id)); // line id
+	//	output_file.write(reinterpret_cast<const char*>(&edge.startNode->node_id), sizeof(edge.startNode->node_id)); // line start id
+	//	output_file.write(reinterpret_cast<const char*>(&edge.endNode->node_id), sizeof(edge.endNode->node_id)); // line end id
+	//}
+
+	//output_file.close();
+	////____________________________________________________________________________________
+

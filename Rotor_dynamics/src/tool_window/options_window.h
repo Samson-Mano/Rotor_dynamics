@@ -7,7 +7,6 @@
 class options_window
 {
 public:
-	bool is_show_constraint = true;
 	bool is_show_modelnodes = true;
 	bool is_show_modeledges = true;
 	bool is_show_modelelements = true;

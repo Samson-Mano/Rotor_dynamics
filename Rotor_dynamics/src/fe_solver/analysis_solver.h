@@ -7,10 +7,10 @@
 #include "../geometry_store/fe_objects/nodes_list_store.h"
 #include "../geometry_store/fe_objects/elementline_list_store.h"
 #include "../geometry_store/fe_objects/elementtri_list_store.h"
-#include "../geometry_store/fe_objects/constraints_list_store.h"
 
 // FE Result Objects Heat analysis
-#include "../geometry_store/analysis_result_objects/heatcontour_tri_list_store.h";
+#include "../geometry_store/analysis_result_objects/quadcontour_list_store.h";
+#include "../geometry_store/analysis_result_objects/nodevector_list_store.h";
 
 // Stop watch
 #include "../events_handler/Stopwatch_events.h"
@@ -61,117 +61,17 @@ public:
 	analysis_solver();
 	~analysis_solver();
 	void heat_analysis_start(nodes_list_store& model_nodes,
+							 const std::vector<glm::vec2>& model_vector_nodes,
 							 elementline_list_store& model_edgeelements,
 							 const elementtri_list_store& model_trielements,
-							 const constraints_list_store& model_constraints,
-							 std::unordered_map<int, material_data>& material_list,
-							 heatcontour_tri_list_store& model_contourresults,
-							 bool& is_heat_analysis_complete);
+							 quadcontour_list_store& model_contourresults,
+							 nodevector_list_store& model_vectorresults,
+							 bool& is_accl_analysis_complete);
 
 
 private:
 	int numDOF = 0;
 	int reducedDOF = 0;
 	std::unordered_map<int, int> nodeid_map;
-
-
-	void map_constraints_to_feobjects(nodes_list_store& model_nodes,
-		elementline_list_store& model_edgeelements,
-		const elementtri_list_store& model_trielements,
-		const constraints_list_store& model_constraints,
-		std::unordered_map<int, fe_constraint_store>& node_constraints,
-		std::unordered_map<int, fe_constraint_store>& edge_constraints,
-		std::unordered_map<int, fe_constraint_store>& element_constraints);
-
-
-	void get_element_conduction_matrix(const glm::vec2& node_pt1,
-		const glm::vec2& node_pt2, 
-		const glm::vec2& node_pt3,
-		const double& elm_kx,
-		const double& elm_ky,
-		const double& elm_thickness,
-		const double& elm_area,
-		Eigen::Matrix3d& Element_conduction_matrix);
-
-
-	void get_element_convection_matrix(const double& elm_heat_transfer_coeff,
-		const double& elm_area,
-		const double& elm_thickness,
-		Eigen::Matrix3d& element_convection_matrix);
-
-
-	void get_element_edge_heat_convection_matrix(const double& edg1_heattransfer_co_eff,
-		const double& edg2_heattransfer_co_eff,
-		const double& edg3_heattransfer_co_eff,
-		const double& edg1_length,
-		const double& edg2_length,
-		const double& edg3_length,
-		const double& elm_thickness,
-		Eigen::Matrix3d& element_edge_convection_matrix);
-
-
-	void get_element_ambient_temp_matrix(const double& elm_heat_transfer_coeff,
-		const double& elm_area,
-		const double& elm_thickness,
-		const double& elm_ambient_temp,
-		Eigen::Vector3d& element_ambient_temp_matrix);
-
-
-	void get_element_heat_source_matrix(const double& elm_heat_source,
-		const double& elm_area,
-		const double& elm_thickness,
-		Eigen::Vector3d& element_heat_source_matrix);
-
-
-	void get_edge_heatsource_matrix(const double& edg1_heatsource,
-		const double& edg2_heatsource,
-		const double& edg3_heatsource,
-		const double& edg1_length,
-		const double& edg2_length,
-		const double& edg3_length,
-		const double& elm_thickness,
-		Eigen::Vector3d& edge_heatsource_matrix);
-
-
-	void get_edge_heatconvection_matrix(const double& edg1_heattransfer_coeff,
-		const double& edg2_heattransfer_coeff,
-		const double& edg3_heattransfer_coeff,
-		const double& edg1_ambient_temp,
-		const double& edg2_ambient_temp,
-		const double& edg3_ambient_temp,
-		const double& edg1_length,
-		const double& edg2_length,
-		const double& edg3_length,
-		const double& elm_thickness, 
-		Eigen::Vector3d& edge_heatconvection_matrix);
-
-
-	void get_edge_spectemp_matrix(const double& edg1_spectemp,
-		const double& edg2_spectemp,
-		const double& edg3_spectemp,
-		Eigen::Vector3d& edge_spectemp_matrix);
-
-
-	void set_global_matrices(const Eigen::Matrix3d& element_k_matrix,
-		const Eigen::Vector3d& element_f_matrix,
-		const Eigen::Vector3d& element_dof_matrix,
-		const int& nd1_id,
-		const int& nd2_id,
-		const int& nd3_id,
-		Eigen::MatrixXd& global_k_matrix,
-		Eigen::VectorXd& global_f_matrix,
-		Eigen::VectorXd& global_dof_matrix);
-
-	void get_reduced_global_matrices(const Eigen::MatrixXd& global_k_matrix,
-		const Eigen::VectorXd& global_f_matrix,
-		const Eigen::VectorXd& global_spec_temp_matrix,
-		const Eigen::VectorXd& global_dof_matrix,
-		Eigen::SparseMatrix<double>& reduced_global_k_matrix,
-		Eigen::SparseVector<double>& reduced_global_f_matrix);
-
-	void set_global_T_matrix(const Eigen::SparseVector<double>& reduced_global_T_matrix,
-		const Eigen::VectorXd& global_dof_matrix,
-		Eigen::VectorXd& global_T_matrix);
-
 
 };

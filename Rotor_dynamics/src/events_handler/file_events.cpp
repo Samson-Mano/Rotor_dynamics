@@ -132,7 +132,7 @@ void file_events::import_rawdata_geometry(geom_store& geom)
 	}
 
 	// Read the model as raw text data
-	geom.read_rawdata(input_file);
+	// geom.read_rawdata(input_file);
 
 	input_file.close();
 }

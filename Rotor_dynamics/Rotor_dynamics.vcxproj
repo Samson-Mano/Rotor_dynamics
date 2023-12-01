@@ -149,8 +149,8 @@
     <ClCompile Include="src\events_handler\mouse_event_handler.cpp" />
     <ClCompile Include="src\events_handler\Stopwatch_events.cpp" />
     <ClCompile Include="src\fe_solver\analysis_solver.cpp" />
-    <ClCompile Include="src\geometry_store\analysis_result_objects\heatcontour_tri_list_store.cpp" />
-    <ClCompile Include="src\geometry_store\fe_objects\constraints_list_store.cpp" />
+    <ClCompile Include="src\geometry_store\analysis_result_objects\nodevector_list_store.cpp" />
+    <ClCompile Include="src\geometry_store\analysis_result_objects\quadcontour_list_store.cpp" />
     <ClCompile Include="src\geometry_store\fe_objects\elementline_list_store.cpp" />
     <ClCompile Include="src\geometry_store\fe_objects\elementquad_list_store.cpp" />
     <ClCompile Include="src\geometry_store\fe_objects\elementtri_list_store.cpp" />
@@ -166,6 +166,8 @@
     <ClCompile Include="src\geometry_store\geometry_objects\dynamic_line_list_store.cpp" />
     <ClCompile Include="src\geometry_store\geometry_objects\dynamic_point_list_store.cpp" />
     <ClCompile Include="src\geometry_store\geometry_objects\dynamic_selrectangle_store.cpp" />
+    <ClCompile Include="src\geometry_store\geometry_objects\dynamic_tricontour_list_store.cpp" />
+    <ClCompile Include="src\geometry_store\geometry_objects\dynamic_vector_list_store.cpp" />
     <ClCompile Include="src\geometry_store\geometry_objects\label_list_store.cpp" />
     <ClCompile Include="src\geometry_store\geometry_objects\line_list_store.cpp" />
     <ClCompile Include="src\geometry_store\geometry_objects\point_list_store.cpp" />
@@ -182,10 +184,6 @@
     <ClCompile Include="src\ImGui\implot_items.cpp" />
     <ClCompile Include="src\ImGui\stb_implement.cpp" />
     <ClCompile Include="src\tool_window\analysis_window.cpp" />
-    <ClCompile Include="src\tool_window\edge_window.cpp" />
-    <ClCompile Include="src\tool_window\element_prop_window.cpp" />
-    <ClCompile Include="src\tool_window\element_window.cpp" />
-    <ClCompile Include="src\tool_window\node_window.cpp" />
     <ClCompile Include="src\tool_window\options_window.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -195,8 +193,8 @@
     <ClInclude Include="src\events_handler\mouse_event_handler.h" />
     <ClInclude Include="src\events_handler\Stopwatch_events.h" />
     <ClInclude Include="src\fe_solver\analysis_solver.h" />
-    <ClInclude Include="src\geometry_store\analysis_result_objects\heatcontour_tri_list_store.h" />
-    <ClInclude Include="src\geometry_store\fe_objects\constraints_list_store.h" />
+    <ClInclude Include="src\geometry_store\analysis_result_objects\nodevector_list_store.h" />
+    <ClInclude Include="src\geometry_store\analysis_result_objects\quadcontour_list_store.h" />
     <ClInclude Include="src\geometry_store\fe_objects\elementline_list_store.h" />
     <ClInclude Include="src\geometry_store\fe_objects\elementquad_list_store.h" />
     <ClInclude Include="src\geometry_store\fe_objects\elementtri_list_store.h" />
@@ -212,6 +210,8 @@
     <ClInclude Include="src\geometry_store\geometry_objects\dynamic_line_list_store.h" />
     <ClInclude Include="src\geometry_store\geometry_objects\dynamic_point_list_store.h" />
     <ClInclude Include="src\geometry_store\geometry_objects\dynamic_selrectangle_store.h" />
+    <ClInclude Include="src\geometry_store\geometry_objects\dynamic_tricontour_list_store.h" />
+    <ClInclude Include="src\geometry_store\geometry_objects\dynamic_vector_list_store.h" />
     <ClInclude Include="src\geometry_store\geometry_objects\label_list_store.h" />
     <ClInclude Include="src\geometry_store\geometry_objects\line_list_store.h" />
     <ClInclude Include="src\geometry_store\geometry_objects\point_list_store.h" />
@@ -232,18 +232,20 @@
     <ClInclude Include="src\ImGui\stb_image.h" />
     <ClInclude Include="src\ImGui\stb_implement.h" />
     <ClInclude Include="src\tool_window\analysis_window.h" />
-    <ClInclude Include="src\tool_window\edge_window.h" />
-    <ClInclude Include="src\tool_window\element_prop_window.h" />
-    <ClInclude Include="src\tool_window\element_window.h" />
-    <ClInclude Include="src\tool_window\node_window.h" />
     <ClInclude Include="src\tool_window\options_window.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="circle_domain_128_data.bin" />
+    <None Include="circle_domain_256_data.bin" />
+    <None Include="circle_domain_64_data.bin" />
+    <None Include="circle_domain_64_onlynode_data.bin" />
     <None Include="resources\dlls\freetype.dll" />
     <None Include="resources\dlls\glew32.dll" />
     <None Include="resources\dlls\glfw3.dll" />
     <None Include="resources\shaders\constraint_frag_shader.frag" />
     <None Include="resources\shaders\constraint_vert_shader.vert" />
+    <None Include="resources\shaders\dynvectorpoint_frag_shader.frag" />
+    <None Include="resources\shaders\dynvectorpoint_vert_shader.vert" />
     <None Include="resources\shaders\load_frag_shader.frag" />
     <None Include="resources\shaders\load_vert_shader.vert" />
     <None Include="resources\shaders\point_frag_shader.frag" />
