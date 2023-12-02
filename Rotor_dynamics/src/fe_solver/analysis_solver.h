@@ -7,6 +7,7 @@
 #include "../geometry_store/fe_objects/nodes_list_store.h"
 #include "../geometry_store/fe_objects/elementline_list_store.h"
 #include "../geometry_store/fe_objects/elementtri_list_store.h"
+#include "../geometry_store/fe_objects/elementquad_list_store.h"
 
 // FE Result Objects Heat analysis
 #include "../geometry_store/analysis_result_objects/quadcontour_list_store.h";
@@ -39,16 +40,6 @@
 typedef Eigen::SparseMatrix<double> SparseMatrix;
 #pragma warning(pop)
 
-struct fe_constraint_store
-{
-	int id = -1;
-	double heat_source_q = 0.0; // Heat source
-	double specified_temperature_T = 0.0; // Specified temperature
-	double heat_transfer_coeff_h = 0.0; // Heat Transfer Co-efficient
-	double Ambient_temperature_Tinf = 0.0; // Ambient temperature
-};
-
-
 
 class analysis_solver
 {
@@ -60,18 +51,17 @@ public:
 
 	analysis_solver();
 	~analysis_solver();
-	void heat_analysis_start(nodes_list_store& model_nodes,
+	void accl_analysis_start(const nodes_list_store& model_nodes,
 							 const std::vector<glm::vec2>& model_vector_nodes,
-							 elementline_list_store& model_edgeelements,
+							 const elementline_list_store& model_edgeelements,
 							 const elementtri_list_store& model_trielements,
+							 const elementquad_list_store& model_quadelements,
+							 const std::vector<double> rpm_values,
 							 quadcontour_list_store& model_contourresults,
 							 nodevector_list_store& model_vectorresults,
 							 bool& is_accl_analysis_complete);
 
 
 private:
-	int numDOF = 0;
-	int reducedDOF = 0;
-	std::unordered_map<int, int> nodeid_map;
 
 };

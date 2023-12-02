@@ -315,6 +315,8 @@
     </None>
     <None Include="resources\shaders\dynvectorpoint_frag_shader.frag" />
     <None Include="resources\shaders\dynvectorpoint_vert_shader.vert" />
+    <None Include="resources\shaders\dyncontourpoint_frag_shader.frag" />
+    <None Include="resources\shaders\dyncontourpoint_vert_shader.vert" />
   </ItemGroup>
   <ItemGroup>
     <Font Include="resources\fonts\CanadaDBNormal.ttf" />

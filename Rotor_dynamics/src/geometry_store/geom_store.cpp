@@ -417,7 +417,7 @@ void geom_store::paint_model_results()
 	if (is_accl_analysis_complete == true)
 	{
 		// Paint the Contour triangles
-//		model_contourresults.paint_tricontour();
+		// model_contourresults.paint_quadcontour();
 
 		// Paint the Contour lines
 		glLineWidth(3.2f);
@@ -430,7 +430,7 @@ void geom_store::paint_model_results()
 		// Execute the open sequence
 		if (is_accl_analysis_complete == true)
 		{
-			sol_window->heat_analysis_complete = true;
+			sol_window->accl_analysis_complete = true;
 			//		sol_window->set_maxmin(model_contourresults.contour_max_vals, model_contourresults.contour_min_vals);
 					// Heat analysis is complete
 			update_model_transperency(true);
@@ -439,14 +439,16 @@ void geom_store::paint_model_results()
 		sol_window->execute_open = false;
 	}
 
-	if (sol_window->execute_heat_analysis == true)
+	if (sol_window->execute_accl_analysis == true)
 	{
-		// Execute Heat Analysis
-		analysis_solver heat_solver;
-		heat_solver.heat_analysis_start(model_nodes,
+		// Execute Acceleartion Analysis
+		analysis_solver accl_solver;
+		accl_solver.accl_analysis_start(model_nodes,
 			model_vector_nodes,
 			model_edgeelements,
 			model_trielements,
+			model_quadelements,
+			sol_window->rpm_values,
 			model_contourresults,
 			model_vectorresults,
 			is_accl_analysis_complete);
@@ -454,15 +456,18 @@ void geom_store::paint_model_results()
 		// Check whether the heat analysis is complete or not
 		if (is_accl_analysis_complete == true)
 		{
-			sol_window->heat_analysis_complete = true;
-			//			sol_window->set_maxmin(model_contourresults.contour_max_vals, model_contourresults.contour_min_vals);
-						// Reset the buffers for heat result contour
-			//			model_contourresults.set_buffer();
+			sol_window->accl_analysis_complete = true;
+			//sol_window->set_maxmin(model_contourresults.contour_max_vals, model_contourresults.contour_min_vals);
+	
 
-						// Heat analysis is complete (Transperency change)
+			// Reset the buffers for result contour
+			model_contourresults.set_buffer();
+			model_vectorresults.set_buffer();
+
+			// Accl analysis is complete (Transperency change)
 			update_model_transperency(true);
 		}
 
-		sol_window->execute_heat_analysis = false;
+		sol_window->execute_accl_analysis = false;
 	}
 }
