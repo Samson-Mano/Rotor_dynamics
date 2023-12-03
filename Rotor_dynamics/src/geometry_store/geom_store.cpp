@@ -416,13 +416,31 @@ void geom_store::paint_model_results()
 	// Paint the Heat analysis result
 	if (is_accl_analysis_complete == true)
 	{
-		// Paint the Contour triangles
-		// model_contourresults.paint_quadcontour();
+		// Update the deflection scale
+		geom_param.normalized_defl_scale = 1.0f;
+		geom_param.defl_scale = sol_window->deformation_scale_max;
 
-		// Paint the Contour lines
-		glLineWidth(3.2f);
-		//		model_contourresults.paint_tricontour_lines();
-		glLineWidth(1.2f);
+		// Update the deflection scale
+		model_contourresults.update_geometry_matrices(false, false, false, false, true);
+		model_vectorresults.update_geometry_matrices(false, false, false, false, true);
+		// ______________________________________________________________________________________
+		
+		// Paint the Contour triangles
+		if (sol_window->show_contour == true)
+		{
+			model_contourresults.paint_quadcontour(sol_window->time_step);
+		}
+
+		//// Paint the Contour lines
+		//glLineWidth(3.2f);
+		////		model_contourresults.paint_tricontour_lines();
+		//glLineWidth(1.2f);
+
+		// Paint the contour vector
+		if (sol_window->show_vector == true)
+		{
+			model_vectorresults.paint_vectors(sol_window->time_step);
+		}
 	}
 
 	if (sol_window->execute_open == true)
@@ -449,6 +467,8 @@ void geom_store::paint_model_results()
 			model_trielements,
 			model_quadelements,
 			sol_window->rpm_values,
+			sol_window->tota_time_period,
+			sol_window->time_interval,
 			model_contourresults,
 			model_vectorresults,
 			is_accl_analysis_complete);
@@ -458,7 +478,10 @@ void geom_store::paint_model_results()
 		{
 			sol_window->accl_analysis_complete = true;
 			//sol_window->set_maxmin(model_contourresults.contour_max_vals, model_contourresults.contour_min_vals);
-	
+			
+			// Set the analysis result time results
+			sol_window->time_interval_atrun = accl_solver.time_interval;
+			sol_window->time_step_count = accl_solver.time_step_count;
 
 			// Reset the buffers for result contour
 			model_contourresults.set_buffer();

@@ -28,10 +28,7 @@ void analysis_window::render_window()
 	ImGui::Begin("Circular Disk Acceleration Solver");
 	//_________________________________________________________________________________________
 
-	static double ramp_up_period = 10.0; // Ramp up period sec
-	static double uniform_period = 12.0; // Uniform period
-	static double ramp_down_period = 20.0; // Ramp down period
-	static double time_interval = 0.001; // time interval
+	
 	
 	// Input text box
 	ImGui::InputDouble("Ramp up period", &ramp_up_period, 0, 0, "%.3f");
@@ -59,6 +56,9 @@ void analysis_window::render_window()
 		// check the values
 		if (ramp_up_period > 0.0 && uniform_period > 0.0 && ramp_down_period > 0.0 && time_interval > 0.0)
 		{
+			// Total time period
+			this->tota_time_period = ramp_up_period + uniform_period + ramp_down_period;
+
 			if (selected_curvepath_option == 0)
 			{
 				// Linear rampup and Linear ramp down
@@ -123,6 +123,59 @@ void analysis_window::render_window()
 	}
 
 	//__________________________________________________________________________________________________
+
+
+	// Input box to give input via text
+	static bool defscale_input_mode = false;
+	static char defscale_str[16] = ""; // buffer to store input deformation scale string
+	static double defscale_input = 0; // buffer to store input deformation scale value
+
+	// Button to switch to input mode
+	if (!defscale_input_mode)
+	{
+		if (ImGui::Button("Deformation Scale"))
+		{
+			defscale_input_mode = true;
+			snprintf(defscale_str, 16, "%.1f", deformation_scale_max); // set the buffer to current deformation scale value
+		}
+	}
+	else // input mode
+	{
+		// Text box to input value
+		ImGui::SetNextItemWidth(60.0f);
+		if (ImGui::InputText("##Deformation Scale", defscale_str, IM_ARRAYSIZE(defscale_str), ImGuiInputTextFlags_CharsDecimal))
+		{
+			// convert the input string to int
+			defscale_input = atoi(defscale_str);
+			// set the load value to input value
+			deformation_scale_max = defscale_input;
+		}
+
+		// Button to switch back to slider mode
+		ImGui::SameLine();
+		if (ImGui::Button("OK"))
+		{
+			defscale_input_mode = false;
+		}
+	}
+
+	// Text for load value
+	ImGui::SameLine();
+	ImGui::Text(" %.1f", deformation_scale_max);
+
+	// Slider for Deflection scale
+	float deformation_scale_flt = static_cast<float>(deformation_scale_max);
+
+	ImGui::Text("Deformation Scale");
+	ImGui::SameLine();
+	ImGui::SliderFloat(".", &deformation_scale_flt, 0.0f, 100.0f, "%.1f");
+	deformation_scale_max = deformation_scale_flt;
+
+	////Set the deformation scale
+	//normailzed_defomation_scale = 1.0f;
+	//deformation_scale = deformation_scale_max;
+
+	ImGui::Spacing();
 
 	//_________________________________________________________________________________________
 
@@ -226,6 +279,37 @@ void analysis_window::render_window()
 
 
 	ImGui::End();
+
+
+	// Cycle through the pulse response time step
+	if (accl_analysis_complete == true)
+	{
+
+		if (animate_play == true)
+		{
+			// Stop watch
+			if ((stopwatch.current_elapsed() * animation_speed) > time_interval_atrun)
+			{
+				stopwatch.reset_time(); // reset the time
+				time_step++; // increment the time step
+
+				// Adjust the time step such that it didnot exceed the time_step_total
+				if (time_step >= time_step_count)
+				{
+					time_step = 0;
+				}
+			}
+		}
+		else if (animate_pause == true)
+		{
+			// Pause the animation
+		}
+		else
+		{
+			// Stop the animation (show the end of animation)
+			time_step = time_step_count - 1;
+		}
+	}
 
 }
 

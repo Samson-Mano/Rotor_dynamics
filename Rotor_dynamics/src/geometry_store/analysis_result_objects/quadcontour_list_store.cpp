@@ -58,10 +58,10 @@ void quadcontour_list_store::add_quadcontour(int& quad_id, node_store* nd1, node
 		nd4_mag_ratio.push_back(temp_nd4_mag);
 
 		// Add to the color list
-		nd1_colors.push_back(geom_parameters::getContourColor_d(1.0f - temp_nd1_mag));
-		nd2_colors.push_back(geom_parameters::getContourColor_d(1.0f - temp_nd2_mag));
-		nd3_colors.push_back(geom_parameters::getContourColor_d(1.0f - temp_nd3_mag));
-		nd4_colors.push_back(geom_parameters::getContourColor_d(1.0f - temp_nd4_mag));
+		nd1_colors.push_back(geom_parameters::getHeatMapColor(1.0f - temp_nd1_mag));
+		nd2_colors.push_back(geom_parameters::getHeatMapColor(1.0f - temp_nd2_mag));
+		nd3_colors.push_back(geom_parameters::getHeatMapColor(1.0f - temp_nd3_mag));
+		nd4_colors.push_back(geom_parameters::getHeatMapColor(1.0f - temp_nd4_mag));
 	}
 
 	quadcontour_data temp_quadcontour;

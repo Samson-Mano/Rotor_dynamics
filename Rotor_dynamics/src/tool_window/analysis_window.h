@@ -20,6 +20,13 @@ public:
 	bool show_contour = true; // Show the acceleration contour
 	bool show_vector = true; // Show the vector
 
+	// Time period and time interval
+	double ramp_up_period = 10.0; // Ramp up period sec
+	double uniform_period = 12.0; // Uniform period
+	double ramp_down_period = 20.0; // Ramp down period
+	double time_interval = 0.1; // time interval
+	double tota_time_period = 42.0; // Total time period
+
 	// RPM values 
 	std::vector<double> rpm_values;
 	int selected_curvepath_option = 0;
