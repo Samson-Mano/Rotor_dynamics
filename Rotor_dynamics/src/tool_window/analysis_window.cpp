@@ -140,11 +140,8 @@ void analysis_window::render_window()
 			ImPlot::PlotLine("Angular Velocity", time_value_list.data(), angular_acceleration.data(), time_value_list.size());
 
 			// Draw a vertical line at a specific time step (replace 'specific_time_step' with the desired value)
-			double data = 1.0; // time step
-			double time_at_run = (time_step * time_interval_atrun);
-			// ImPlot::PlotBars(" dada", &data, (time_step* time_interval_atrun), 0.1, 1);
-
-			ImPlot::PlotInfLines("Line",&time_at_run, 1);
+			double time_at_run = time_value_list[time_step]; // (time_step * time_interval_atrun);
+			ImPlot::PlotInfLines("",&time_at_run, 1);
 
 			// End the plot
 			ImPlot::EndPlot();
