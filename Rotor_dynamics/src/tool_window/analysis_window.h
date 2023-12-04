@@ -17,20 +17,30 @@ public:
 	// analysis results
 	bool accl_analysis_complete = false;
 	bool show_model = true; // show undeformed model 
-	bool show_contour = true; // Show the acceleration contour
+	bool show_contour = false; // Show the acceleration contour
 	bool show_vector = true; // Show the vector
 
 	// Time period and time interval
-	double ramp_up_period = 10.0; // Ramp up period sec
-	double uniform_period = 12.0; // Uniform period
-	double ramp_down_period = 20.0; // Ramp down period
+	double ramp_up_period = 12.0; // Ramp up period sec
+	double uniform_period = 20.0; // Uniform period
+	double ramp_down_period = 16.0; // Ramp down period
 	double time_interval = 0.1; // time interval
-	double tota_time_period = 42.0; // Total time period
+	double total_time_period = 48.0; // Total time period
 
 	// RPM values 
 	std::vector<double> rpm_values;
 	int selected_curvepath_option = 0;
 
+	// Maximum & minimum values
+	std::vector<double> contour_maxvalue;
+	std::vector<double> contour_minvalue;
+
+	// Angular acceleration and time value list
+	double chart_time_max_val = 0.0;
+	double chart_angular_accl_min_val = 0.0;
+	double chart_angular_accl_max_val = 0.0;
+	std::vector<double> time_value_list;
+	std::vector<double> angular_acceleration;
 
 	// Animation control
 	bool animate_play = true;
@@ -48,13 +58,11 @@ public:
 	~analysis_window();
 	void init();
 	void render_window();
-	void set_maxmin(const double& contour_maxvalue, const double& contour_minvalue);
+	void set_maxmin(const std::vector<double>& contour_maxvalue, const std::vector<double>& contour_minvalue);
+	void set_acceleration_values(const std::vector<double>& angular_acceleration);
 
 private:
 	Stopwatch stopwatch;
-
-	double contour_maxvalue = 100.0;
-	double contour_minvalue = 0.0;
 
 	std::vector<double> generateTrapezoidalProfile(double rampUpPeriod, double uniformPeriod, double rampDownPeriod, double timeInterval);
 	std::vector<double> generateSmoothTrapezoidalProfile(double rampUpPeriod,double uniformPeriod, double rampDownPeriod, double timeInterval);

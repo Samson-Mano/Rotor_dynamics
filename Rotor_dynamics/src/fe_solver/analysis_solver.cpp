@@ -48,8 +48,9 @@ void analysis_solver::accl_analysis_start(nodes_list_store& model_nodes,
 	std::cout << "Acceleration analysis started" << std::endl;
 
 	// Calculate angular velocity and angular acceleration
-	std::vector<double> angular_velocity;
-	std::vector<double> angular_acceleration;
+	angular_velocity.clear();
+	angular_acceleration.clear();
+
 	for (int i = 0; i < static_cast<int>(rpm_values.size() - 1); i++)
 	{
 		double delta_omega = rpm_values[i + 1] - rpm_values[i];
@@ -128,7 +129,7 @@ void analysis_solver::accl_analysis_start(nodes_list_store& model_nodes,
 				delayed_index <= static_cast<int>(rpm_values.size() - 1))
 			{
 				float scalar_tangent_acceleration = eccentricity_r * angular_acceleration[delayed_index];
-				float scalar_radial_acceleration = eccentricity_r * std::pow(angular_velocity[delayed_index], 2);
+				float scalar_radial_acceleration = -1.0 * eccentricity_r * std::pow(angular_velocity[delayed_index], 2);
 
 				// Check whether Delayed index is not out of range (it is not)
 				temp_accl_val = scalar_tangent_acceleration + scalar_radial_acceleration;
@@ -163,6 +164,15 @@ void analysis_solver::accl_analysis_start(nodes_list_store& model_nodes,
 	//_________________________________________________________________________________________________________________
 	// Find the vector linear acceleration data
 	std::unordered_map<int, std::vector <glm::vec2>> nd_vector_results;
+	std::vector<double> accl_vec_max_vals;
+	std::vector<double> accl_vec_min_vals;
+
+	// set the max values
+	for (int i = 0; i < accl_data_count; i++)
+	{
+		accl_vec_max_vals.push_back(-DBL_MAX);
+		accl_vec_min_vals.push_back(DBL_MAX);
+	}
 
 	int nd_vector_id = 0;
 	for (const auto& nd_pt : model_vector_nodes)
@@ -177,9 +187,6 @@ void analysis_solver::accl_analysis_start(nodes_list_store& model_nodes,
 
 		// Unit radial vector (towards center)
 		glm::vec2 unit_radial_vector = glm::normalize(nd_origin - nd_pt);
-
-
-		// std::cout << nd_pt.x  << ", " <<  nd_pt.y << "  " << unit_radial_vector.x << ", " << unit_radial_vector.y << std::endl;
 
 		// Unit tangential vector(counter clock wise rotation)
 		glm::vec2 unit_tangential_vector = glm::rotate(glm::mat4(1.0f),
@@ -201,20 +208,30 @@ void analysis_solver::accl_analysis_start(nodes_list_store& model_nodes,
 			temp_accl_vector = glm::vec2(0);
 
 			if (delayed_index >= 0 &&
-				delayed_index <= static_cast<int>(angular_acceleration.size() - 1))
+				delayed_index <= static_cast<int>(rpm_values.size() - 1))
 			{
 				// Check whether Delayed index is not out of range (it is not)
 				float scalar_tangent_acceleration = eccentricity_r * angular_acceleration[delayed_index];
-				float scalar_radial_acceleration = eccentricity_r * std::pow(angular_velocity[delayed_index], 2);
+				float scalar_radial_acceleration = -1.0*eccentricity_r * std::pow(angular_velocity[delayed_index], 2);
 
 				temp_accl_vector = (scalar_tangent_acceleration * unit_tangential_vector)+
 					 (scalar_radial_acceleration * unit_radial_vector);
-
-				// temp_accl_vector = 	(scalar_radial_acceleration * unit_radial_vector);
 			}
 
 			// Add to the list
 			accl_vector_values.push_back(temp_accl_vector);
+
+			// Set the maximum at i
+			if (accl_vec_max_vals[i] < glm::length(temp_accl_vector))
+			{
+				accl_vec_max_vals[i] = glm::length(temp_accl_vector);
+			}
+
+			// Set the minimum at i
+			if (accl_vec_min_vals[i] > glm::length(temp_accl_vector))
+			{
+				accl_vec_min_vals[i] = glm::length(temp_accl_vector);
+			}
 
 			i++;
 		}
@@ -233,6 +250,11 @@ void analysis_solver::accl_analysis_start(nodes_list_store& model_nodes,
 	std::cout << "Vector values calculation completed at = " << stopwatch_elapsed_str.str() << std::endl;
 
 	//_________________________________________________________________________________________________________________
+
+	// Set the maximum
+	this->accl_vec_max_vals = accl_vec_max_vals;
+	this->accl_vec_min_vals = accl_vec_min_vals;
+
 
 	// Add to the scalar list (Quad elements)
 	model_contourresults.clear_data();
@@ -269,7 +291,7 @@ void analysis_solver::accl_analysis_start(nodes_list_store& model_nodes,
 
 		// Add to the vector
 		model_vectorresults.add_vector(vector_id, vector_loc, vector_datas, 
-			accl_max_vals, accl_min_vals);
+			accl_vec_max_vals, accl_vec_min_vals);
 
 	}
 

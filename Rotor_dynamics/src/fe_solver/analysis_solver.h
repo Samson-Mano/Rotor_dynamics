@@ -50,6 +50,14 @@ public:
 	bool print_matrix = false;
 	Stopwatch_events stopwatch;
 
+	// Maximum and minimum values
+	std::vector<double> accl_vec_max_vals;
+	std::vector<double> accl_vec_min_vals;
+
+	// Store the angular velocity and angular acceleration
+	std::vector<double> angular_velocity;
+	std::vector<double> angular_acceleration;
+
 	int time_step_count = 0;
 	double time_interval = 0.0;
 	double total_simulation_time = 0.0;

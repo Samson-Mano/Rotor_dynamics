@@ -467,7 +467,7 @@ void geom_store::paint_model_results()
 			model_trielements,
 			model_quadelements,
 			sol_window->rpm_values,
-			sol_window->tota_time_period,
+			sol_window->total_time_period,
 			sol_window->time_interval,
 			model_contourresults,
 			model_vectorresults,
@@ -477,11 +477,16 @@ void geom_store::paint_model_results()
 		if (is_accl_analysis_complete == true)
 		{
 			sol_window->accl_analysis_complete = true;
-			//sol_window->set_maxmin(model_contourresults.contour_max_vals, model_contourresults.contour_min_vals);
-			
+
 			// Set the analysis result time results
 			sol_window->time_interval_atrun = accl_solver.time_interval;
 			sol_window->time_step_count = accl_solver.time_step_count;
+
+			// Set the contour maximum values
+			sol_window->set_maxmin(accl_solver.accl_vec_max_vals,
+				accl_solver.accl_vec_min_vals);
+			sol_window->set_acceleration_values(accl_solver.angular_velocity);
+
 
 			// Reset the buffers for result contour
 			model_contourresults.set_buffer();

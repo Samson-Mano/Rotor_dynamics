@@ -57,7 +57,7 @@ void analysis_window::render_window()
 		if (ramp_up_period > 0.0 && uniform_period > 0.0 && ramp_down_period > 0.0 && time_interval > 0.0)
 		{
 			// Total time period
-			this->tota_time_period = ramp_up_period + uniform_period + ramp_down_period;
+			this->total_time_period = ramp_up_period + uniform_period + ramp_down_period;
 
 			if (selected_curvepath_option == 0)
 			{
@@ -107,18 +107,49 @@ void analysis_window::render_window()
 	if (accl_analysis_complete == true)
 	{
 		// Contour Bar
-		float minValue = contour_minvalue;
-		float maxValue = contour_maxvalue;
+		float minValue = contour_minvalue[time_step];
+		float maxValue = contour_maxvalue[time_step];
 		int numLevels = 5;
 
 		// Show contour bars in the ImGui window
-		ImGui::Text("Contour Bar");
+		ImGui::Text("Contour Bar - Angular Acceleration");
 
 		ImPlot::CreateContext();
 
 		static int cmap = ImPlotColormap_Jet;
 
-		ImPlot::ColormapScale("##Scale", minValue, maxValue, { 100,320.0f }, "%g \xC2\xB0 C", 0, cmap);
+		ImPlot::ColormapScale("##Scale", minValue, maxValue, { 100,320.0f }, "%g rad/sec2", 0, cmap);
+
+		ImGui::SameLine();
+
+		// Code for the Angular Acceleration plot
+		// ImGui::Text("Angular Acceleration Plot");
+
+
+		if (ImPlot::BeginPlot("Angular Velocity vs. Time", ImVec2(-1, 0))) 
+		{
+
+			ImPlot::SetupAxis(ImAxis_X1, "Time (s)");
+			ImPlot::SetupAxis(ImAxis_Y1, "Angular Velocity (rad/s)");
+
+			ImPlot::SetupAxisLimits(ImAxis_X1, 0,chart_time_max_val); // Set X-axis limits
+			ImPlot::SetupAxisLimits(ImAxis_Y1, chart_angular_accl_min_val,
+				chart_angular_accl_max_val); // Set Y-axis limits
+
+			// Plot the X-Y data
+			ImPlot::PlotLine("Angular Velocity", time_value_list.data(), angular_acceleration.data(), time_value_list.size());
+
+			// Draw a vertical line at a specific time step (replace 'specific_time_step' with the desired value)
+			double data = 1.0; // time step
+			double time_at_run = (time_step * time_interval_atrun);
+			// ImPlot::PlotBars(" dada", &data, (time_step* time_interval_atrun), 0.1, 1);
+
+			ImPlot::PlotInfLines("Line",&time_at_run, 1);
+
+			// End the plot
+			ImPlot::EndPlot();
+		}
+
 		ImPlot::DestroyContext();
 	}
 
@@ -313,11 +344,36 @@ void analysis_window::render_window()
 
 }
 
-void analysis_window::set_maxmin(const double& contour_maxvalue, const double& contour_minvalue)
+void analysis_window::set_maxmin(const std::vector<double>& contour_maxvalue, const std::vector<double>& contour_minvalue)
 {
 	// Set the contour maximum and minimum
 	this->contour_maxvalue = contour_maxvalue;
 	this->contour_minvalue = contour_minvalue;
+}
+
+void analysis_window::set_acceleration_values(const std::vector<double>& angular_acceleration)
+{
+	// Angular accelerations
+	this->angular_acceleration = angular_acceleration;
+
+	// Time values list
+	this->time_value_list.clear();
+
+	for (int i = 0; i < time_step_count; i++)
+	{
+		this->time_value_list.push_back(i * time_interval_atrun);
+	}
+
+	// Set the chart parameters
+	chart_time_max_val = (time_step_count * time_interval_atrun) + (0.1 * time_step_count * time_interval_atrun);
+
+	// Acceleration max and min
+	chart_angular_accl_min_val = *std::min_element(angular_acceleration.begin(),angular_acceleration.end());
+	chart_angular_accl_min_val = chart_angular_accl_min_val + (0.1 * chart_angular_accl_min_val);
+
+	chart_angular_accl_max_val = *std::max_element(angular_acceleration.begin(), angular_acceleration.end());
+	chart_angular_accl_max_val = chart_angular_accl_max_val + (0.1 * chart_angular_accl_max_val);
+
 }
 
 
